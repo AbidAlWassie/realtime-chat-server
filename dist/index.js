@@ -24,7 +24,7 @@ io.on("connection", (socket) => {
         console.log(`User with ID: ${socket.id} joined room: ${room}`);
     });
     socket.on("send_message", (data) => {
-        const messageData = Object.assign(Object.assign({}, data), { senderId: socket.id });
+        const messageData = Object.assign(Object.assign({}, data), { senderId: data.senderId });
         console.log(`Message sent in room ${data.room}:`, messageData);
         // Emit to everyone in the specified room
         io.to(data.room).emit("receive_message", messageData);

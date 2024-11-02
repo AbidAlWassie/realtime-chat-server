@@ -29,7 +29,7 @@ io.on("connection", (socket) => {
   socket.on("send_message", (data) => {
     const messageData = {
       ...data,
-      senderId: socket.id, // Keep the sender's ID for identification
+      senderId: data.senderId, // Keep the sender's ID for identification
     };
     console.log(`Message sent in room ${data.room}:`, messageData);
     // Emit to everyone in the specified room
