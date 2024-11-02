@@ -6,7 +6,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "outDir": "./dist" // Compile output to `dist` folder
+    "outDir": "./dist"
   },
-  "include": ["*.ts"]
+  "include": ["**/*.ts"]
 }
