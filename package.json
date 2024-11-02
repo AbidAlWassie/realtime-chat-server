@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "start": "nodemon dist/index.js"
+    "start": "nodemon dist/index.js",
+    "test": "npm run build && npm start"
   },
   "author": "",
   "license": "ISC",

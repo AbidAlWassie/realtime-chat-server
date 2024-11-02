@@ -29,9 +29,15 @@ io.on("connection", (socket) => {
   socket.on("send_message", (data) => {
     const messageData = {
       ...data,
-      senderId: socket.id,
+      senderId: socket.id, // Keep the sender's ID for identification
     };
+    console.log(`Message sent in room ${data.room}:`, messageData);
+    // Emit to everyone in the specified room
     io.to(data.room).emit("receive_message", messageData);
+  });
+
+  socket.on("disconnect", () => {
+    console.log(`User Disconnected: ${socket.id}`);
   });
 });
 
