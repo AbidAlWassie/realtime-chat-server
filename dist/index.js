@@ -1,5 +1,4 @@
 "use strict";
-// server/index.ts
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -26,8 +25,12 @@ io.on("connection", (socket) => {
     socket.on("send_message", (data) => {
         const messageData = Object.assign(Object.assign({}, data), { senderId: data.senderId });
         console.log(`Message sent in room ${data.room}:`, messageData);
-        // Emit to everyone in the specified room
         io.to(data.room).emit("receive_message", messageData);
+    });
+    socket.on("typing", (data) => {
+        socket
+            .to(data.room)
+            .emit("user_typing", { user: data.user, isTyping: data.isTyping });
     });
     socket.on("disconnect", () => {
         console.log(`User Disconnected: ${socket.id}`);

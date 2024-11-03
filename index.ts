@@ -1,5 +1,3 @@
-// server/index.ts
-
 import cors from "cors";
 import express from "express";
 import http from "http";
@@ -29,11 +27,16 @@ io.on("connection", (socket) => {
   socket.on("send_message", (data) => {
     const messageData = {
       ...data,
-      senderId: data.senderId, // Keep the sender's ID for identification
+      senderId: data.senderId,
     };
     console.log(`Message sent in room ${data.room}:`, messageData);
-    // Emit to everyone in the specified room
     io.to(data.room).emit("receive_message", messageData);
+  });
+
+  socket.on("typing", (data) => {
+    socket
+      .to(data.room)
+      .emit("user_typing", { user: data.user, isTyping: data.isTyping });
   });
 
   socket.on("disconnect", () => {
