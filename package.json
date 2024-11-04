@@ -3,16 +3,21 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "prebuild": "rm -rf dist",
     "build": "tsc",
     "start": "nodemon dist/index.js",
-    "test": "npm run build && npm start"
+    "test": "npm run build && npm start",
+    "dev": "nodemon index.ts",
+    "netlify:dev": "netlify dev"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@netlify/functions": "^2.8.2",
     "cors": "^2.8.5",
     "express": "^4.21.1",
+    "netlify-cli": "^17.37.2",
     "socket.io": "^4.8.1"
   },
   "devDependencies": {
