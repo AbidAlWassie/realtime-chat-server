@@ -1,4 +1,4 @@
-// index.ts
+// netlify/functions/socketServer.ts
 
 import { Handler } from "@netlify/functions";
 import cors from "cors";
