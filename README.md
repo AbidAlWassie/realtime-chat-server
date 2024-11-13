@@ -2,6 +2,7 @@
 
 ## Build & Start the app
 
+### Run
 ```shell
-npm run build; npm start
+npm run build && npm start
 ```
