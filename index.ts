@@ -39,6 +39,32 @@ io.on("connection", (socket) => {
       .emit("user_typing", { user: data.user, isTyping: data.isTyping });
   });
 
+  // In your server.ts
+  socket.on("typing", (data) => {
+    const dm = [data.senderId, data.receiverId].sort().join("-");
+    socket.to(dm).emit("user_typing", { senderId: data.senderId });
+  });
+
+  socket.on("stop_typing", (data) => {
+    const dm = [data.senderId, data.receiverId].sort().join("-");
+    socket.to(dm).emit("user_stop_typing", { senderId: data.senderId });
+  });
+
+  // Handle joining direct message room
+  socket.on("join_direct", (data) => {
+    const dm = [data.senderId, data.receiverId].sort().join("-");
+    socket.join(dm);
+    console.log(`User ${socket.id} joined DM dm: ${dm}`);
+  });
+
+  // Handle direct messages
+  socket.on("send_direct_message", (message) => {
+    const dm = [message.senderId, message.receiverId].sort().join("-");
+    // Emit to the specific dm including the sender
+    io.in(dm).emit("receive_direct_message", message);
+    console.log(`Direct message sent in dm ${dm}:`, message);
+  });
+
   socket.on("disconnect", () => {
     console.log(`User Disconnected: ${socket.id}`);
   });
