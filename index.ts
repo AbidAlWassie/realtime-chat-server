@@ -14,13 +14,9 @@ const io = new Server(server, {
   },
 });
 
-// Helper function to create consistent room IDs
-const createRoomId = (id1: string, id2: string) => [id1, id2].sort().join("-");
-
 io.on("connection", (socket) => {
   console.log(`User Connected: ${socket.id}`);
 
-  // Group Chat Room Events
   socket.on("join_room", (room) => {
     socket.join(room);
     console.log(`User with ID: ${socket.id} joined room: ${room}`);
@@ -35,50 +31,54 @@ io.on("connection", (socket) => {
     io.to(data.room).emit("receive_message", messageData);
   });
 
+  // Handle room typing indicators
   socket.on("typing", (data) => {
     if (data.room) {
-      // Group chat typing
+      // For group chats
       socket.to(data.room).emit("user_typing", {
         user: data.user,
         isTyping: data.isTyping,
       });
-    } else if (data.senderId && data.receiverId) {
-      // DM typing
-      const roomId = createRoomId(data.senderId, data.receiverId);
-      socket.to(roomId).emit("user_typing", {
+    } else {
+      // For direct messages
+      const dm = [data.senderId, data.receiverId].sort().join("-");
+      socket.to(dm).emit("user_typing", {
         senderId: data.senderId,
+        isTyping: true,
       });
     }
   });
 
+  // Handle stop typing
   socket.on("stop_typing", (data) => {
-    if (data.senderId && data.receiverId) {
-      const roomId = createRoomId(data.senderId, data.receiverId);
-      socket.to(roomId).emit("user_stop_typing", {
+    if (data.room) {
+      // For group chats
+      socket.to(data.room).emit("user_typing", {
+        user: data.user,
+        isTyping: false,
+      });
+    } else {
+      // For direct messages
+      const dm = [data.senderId, data.receiverId].sort().join("-");
+      socket.to(dm).emit("user_typing", {
         senderId: data.senderId,
+        isTyping: false,
       });
     }
   });
 
-  // Direct Message Events
+  // Handle direct message room joining
   socket.on("join_direct", (data) => {
-    try {
-      const roomId = createRoomId(data.senderId, data.receiverId);
-      socket.join(roomId);
-      console.log(`User ${socket.id} joined DM room: ${roomId}`);
-    } catch (error) {
-      console.error("Error joining DM room:", error);
-    }
+    const dm = [data.senderId, data.receiverId].sort().join("-");
+    socket.join(dm);
+    console.log(`User ${socket.id} joined DM room: ${dm}`);
   });
 
+  // Handle direct messages
   socket.on("send_direct_message", (message) => {
-    try {
-      const roomId = createRoomId(message.senderId, message.receiverId);
-      io.in(roomId).emit("receive_direct_message", message);
-      console.log(`Direct message sent in room ${roomId}:`, message);
-    } catch (error) {
-      console.error("Error sending DM:", error);
-    }
+    const dm = [message.senderId, message.receiverId].sort().join("-");
+    io.in(dm).emit("receive_direct_message", message);
+    console.log(`Direct message sent in DM ${dm}:`, message);
   });
 
   socket.on("disconnect", () => {
@@ -87,5 +87,5 @@ io.on("connection", (socket) => {
 });
 
 server.listen(3001, () => {
-  console.log("SERVER IS RUNNING on port 3001");
+  console.log("SERVER IS RUNNING");
 });
